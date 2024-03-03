@@ -12,7 +12,5 @@ parameters:
       name: efk-operator-sentry
 
     operator:
-      grafana:
-        enabled: true
       agent:
         enabled: true
