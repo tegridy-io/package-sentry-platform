@@ -1,0 +1,3 @@
+= EFK Sentry Platform
+
+sentry-platform is a Commodore configuration package to manage EFK Sentry Platform.

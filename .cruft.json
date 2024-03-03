@@ -1,0 +1,20 @@
+{
+  "template": "https://github.com/projectsyn/commodore-config-package-template.git",
+  "commit": "6daf493fe1f15ae27efa46b641518c55c0e3741c",
+  "checkout": "main",
+  "context": {
+    "cookiecutter": {
+      "name": "EFK Sentry Platform",
+      "slug": "sentry-platform",
+      "test_cases": "defaults",
+      "add_golden": "y",
+      "copyright_holder": "VSHN AG <info@vshn.ch>",
+      "copyright_year": "2024",
+      "github_owner": "tegridy-io",
+      "__github_name": "package-sentry-platform",
+      "__github_url": "https://github.com/tegridy-io/package-sentry-platform",
+      "_template": "https://github.com/projectsyn/commodore-config-package-template.git"
+    }
+  },
+  "directory": null
+}
