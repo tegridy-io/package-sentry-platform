@@ -1,11 +1,17 @@
 applications:
   - grafana-operator
+  - etcd as insight-etcd
 
 parameters:
   components:
     grafana-operator:
       url: https://github.com/tegridy-io/component-grafana-operator.git
       version: master
+    etcd:
+      url: https://github.com/projectsyn/component-etcd.git
+      version: v0.1.0
+
+  # --- Grafana Operator -------------------------------------------------------
 
   grafana_operator:
     namespace:
@@ -14,3 +20,51 @@ parameters:
     operator:
       grafana:
         enabled: true
+
+  # --- Etcd -------------------------------------------------------------------
+
+  insight_etcd:
+    namespace: efk-insight-etcd
+    secrets:
+      etcd-root-auth:
+        stringData:
+          password: '?{vaultkv:${cluster:tenant}/${cluster:name}/insight/etcd/rootPassword}'
+      etcd-token-private-key:
+        stringData:
+          jwt-token.pem: '?{vaultkv:${cluster:tenant}/${cluster:name}/insight/etcd/tokenPrivkey}'
+
+    helm_values:
+      fullnameOverride: etcd
+      autoCompactionMode: periodic
+      autoCompactionRetention: 12h
+
+      replicaCount: 3
+
+      resources:
+        requests:
+          cpu: 100m
+          memory: 400Mi
+        limits:
+          memory: 800Mi
+
+      auth:
+        rbac:
+          allowNoneAuthentication: false
+          existingSecret: etcd-root-auth
+        client:
+          secureTransport: true
+          useAutoTLS: true
+          # existingSecret: etcd-client-auth
+          existingSecret: ''
+        peer:
+          secureTransport: true
+          useAutoTLS: true
+          # existingSecret: etcd-peer-auth
+          existingSecret: ''
+        token:
+          privateKey:
+            existingSecret: etcd-token-private-key
+
+      persistence:
+        storageClass: ceph-block
+        size: 2Gi
