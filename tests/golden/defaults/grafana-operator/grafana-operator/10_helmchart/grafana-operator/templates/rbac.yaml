@@ -212,4 +212,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: grafana-operator
-    namespace: efk-operator-sentry
+    namespace: efk-operator-grafana
