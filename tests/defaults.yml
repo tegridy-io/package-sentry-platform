@@ -1,15 +1,15 @@
 applications:
-  - sentry-operators
+  - grafana-operator
 
 parameters:
   components:
-    sentry-operators:
-      url: https://github.com/tegridy-io/component-sentry-operators.git
+    grafana-operator:
+      url: https://github.com/tegridy-io/component-grafana-operator.git
       version: master
 
-  sentry_operators:
+  grafana_operator:
     namespace:
-      name: efk-operator-sentry
+      name: efk-operator-grafana
 
     operator:
       grafana:
