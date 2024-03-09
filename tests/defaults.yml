@@ -1,6 +1,7 @@
 applications:
   - grafana-operator
   - etcd as insight-etcd
+  - mimir as insight-mimir
 
 parameters:
   components:
@@ -9,6 +10,9 @@ parameters:
       version: master
     etcd:
       url: https://github.com/projectsyn/component-etcd.git
+      version: master
+    mimir:
+      url: https://github.com/tegridy-io/component-mimir.git
       version: master
 
   grafana_operator:
@@ -59,3 +63,36 @@ parameters:
       persistence:
         storageClass: ceph-block
         size: 2Gi
+
+  # --- Mimir ------------------------------------------------------------------
+
+  insight_mimir:
+    namespace:
+      name: efk-insight-mimir
+
+    global:
+      storageClass: ceph-block
+      objectClass: ceph-bucket
+
+    s3:
+      region: eu-central-2
+      endpoint: rook-ceph-rgw-ceph-objectstore.efk-storage-rook.svc
+      insecure: true
+
+    config:
+      haTracker: true
+      # haLabels:
+      #   cluster: cluster_id
+      #   replica: prometheus_replica
+      haStore:
+        endpoints:
+          - https://etcd-0.etcd-headless.efk-insight-etcd.svc:2379
+          - https://etcd-1.etcd-headless.efk-insight-etcd.svc:2379
+          - https://etcd-2.etcd-headless.efk-insight-etcd.svc:2379
+        tls_enabled: true
+        tls_insecure_skip_verify: true
+        username: username
+        password: password
+
+    helmValues:
+      fullnameOverride: mimir
