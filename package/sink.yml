@@ -13,7 +13,7 @@ parameters:
       version: v0.1.0
     mimir:
       url: https://github.com/tegridy-io/component-mimir.git
-      version: master
+      version: fix/ring-kvstore
 
   # --- Grafana Operator -------------------------------------------------------
 
@@ -29,13 +29,13 @@ parameters:
 
   observer_etcd:
     namespace: efk-observer-etcd
-    secrets:
-      etcd-root-auth:
-        stringData:
-          password: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/rootPassword}'
-      etcd-token-private-key:
-        stringData:
-          jwt-token.pem: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/tokenPrivkey}'
+    # secrets:
+    #   etcd-root-auth:
+    #     stringData:
+    #       password: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/rootPassword}'
+    #   etcd-token-private-key:
+    #     stringData:
+    #       jwt-token.pem: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/tokenPrivkey}'
 
     helm_values:
       fullnameOverride: etcd
@@ -51,23 +51,18 @@ parameters:
         limits:
           memory: 800Mi
 
-      auth:
+      ~auth:
         rbac:
-          allowNoneAuthentication: false
-          existingSecret: etcd-root-auth
-        client:
-          secureTransport: true
-          useAutoTLS: true
-          # existingSecret: etcd-client-auth
-          existingSecret: ''
-        peer:
-          secureTransport: true
-          useAutoTLS: true
-          # existingSecret: etcd-peer-auth
-          existingSecret: ''
+          create: false
+          allowNoneAuthentication: true
         token:
-          privateKey:
-            existingSecret: etcd-token-private-key
+          enabled: false
+        client:
+          secureTransport: false
+          useAutoTLS: false
+        peer:
+          secureTransport: false
+          useAutoTLS: false
 
       persistence:
         storageClass: ceph-block
@@ -89,19 +84,13 @@ parameters:
       insecure: true
 
     config:
+      externalRing: false
       haTracker: true
-      # haLabels:
-      #   cluster: cluster_id
-      #   replica: prometheus_replica
-      haStore:
+      kvStore:
         endpoints:
           - https://etcd-0.etcd-headless.efk-observer-etcd.svc:2379
           - https://etcd-1.etcd-headless.efk-observer-etcd.svc:2379
           - https://etcd-2.etcd-headless.efk-observer-etcd.svc:2379
-        tls_enabled: true
-        tls_insecure_skip_verify: true
-        username: root
-        password: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/rootPassword}'
 
     helmValues:
       fullnameOverride: mimir

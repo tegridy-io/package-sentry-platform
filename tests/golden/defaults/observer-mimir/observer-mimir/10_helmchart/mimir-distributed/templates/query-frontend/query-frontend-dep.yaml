@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.11.0
+    helm.sh/chart: mimir-distributed-5.2.2
   name: mimir-query-frontend
   namespace: efk-observer-mimir
 spec:
@@ -19,18 +19,21 @@ spec:
       app.kubernetes.io/instance: mimir
       app.kubernetes.io/name: mimir
   strategy:
+    rollingUpdate:
+      maxSurge: 15%
+      maxUnavailable: 0
     type: RollingUpdate
   template:
     metadata:
       annotations:
-        checksum/config: 3c4cedeedc77889b61b46db5959a6209981daacc9cc80c174e5ff8b9852ac5de
+        checksum/config: 57b5a6038a55b5aa50b133a99912a0498a89a708b34a377aeec058c4d7316798
       labels:
         app.kubernetes.io/component: query-frontend
         app.kubernetes.io/instance: mimir
         app.kubernetes.io/managed-by: Helm
         app.kubernetes.io/name: mimir
-        app.kubernetes.io/version: 2.7.1
-        helm.sh/chart: mimir-distributed-4.3.0
+        app.kubernetes.io/version: 2.11.0
+        helm.sh/chart: mimir-distributed-5.2.2
       namespace: efk-observer-mimir
     spec:
       affinity: {}
@@ -43,7 +46,7 @@ spec:
           envFrom:
             - secretRef:
                 name: observer-mimir-metrics-store
-          image: grafana/mimir:2.7.1
+          image: grafana/mimir:2.11.0
           imagePullPolicy: IfNotPresent
           livenessProbe: null
           name: query-frontend

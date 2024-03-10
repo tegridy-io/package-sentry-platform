@@ -69,22 +69,15 @@ spec:
             - name: ETCD_LOG_LEVEL
               value: info
             - name: ALLOW_NONE_AUTHENTICATION
-              value: 'no'
-            - name: ETCD_ROOT_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  key: password
-                  name: etcd-root-auth
-            - name: ETCD_AUTH_TOKEN
-              value: jwt,priv-key=/opt/bitnami/etcd/certs/token/jwt-token.pem,sign-method=RS256,ttl=10m
+              value: 'yes'
             - name: ETCD_ADVERTISE_CLIENT_URLS
-              value: https://$(MY_POD_NAME).etcd-headless.efk-observer-etcd.svc.cluster.local:2379,https://etcd.efk-observer-etcd.svc.cluster.local:2379
+              value: http://$(MY_POD_NAME).etcd-headless.efk-observer-etcd.svc.cluster.local:2379,http://etcd.efk-observer-etcd.svc.cluster.local:2379
             - name: ETCD_LISTEN_CLIENT_URLS
-              value: https://0.0.0.0:2379
+              value: http://0.0.0.0:2379
             - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
-              value: https://$(MY_POD_NAME).etcd-headless.efk-observer-etcd.svc.cluster.local:2380
+              value: http://$(MY_POD_NAME).etcd-headless.efk-observer-etcd.svc.cluster.local:2380
             - name: ETCD_LISTEN_PEER_URLS
-              value: https://0.0.0.0:2380
+              value: http://0.0.0.0:2380
             - name: ETCD_AUTO_COMPACTION_MODE
               value: periodic
             - name: ETCD_AUTO_COMPACTION_RETENTION
@@ -94,13 +87,9 @@ spec:
             - name: ETCD_INITIAL_CLUSTER_STATE
               value: new
             - name: ETCD_INITIAL_CLUSTER
-              value: etcd-0=https://etcd-0.etcd-headless.efk-observer-etcd.svc.cluster.local:2380,etcd-1=https://etcd-1.etcd-headless.efk-observer-etcd.svc.cluster.local:2380,etcd-2=https://etcd-2.etcd-headless.efk-observer-etcd.svc.cluster.local:2380
+              value: etcd-0=http://etcd-0.etcd-headless.efk-observer-etcd.svc.cluster.local:2380,etcd-1=http://etcd-1.etcd-headless.efk-observer-etcd.svc.cluster.local:2380,etcd-2=http://etcd-2.etcd-headless.efk-observer-etcd.svc.cluster.local:2380
             - name: ETCD_CLUSTER_DOMAIN
               value: etcd-headless.efk-observer-etcd.svc.cluster.local
-            - name: ETCD_AUTO_TLS
-              value: 'true'
-            - name: ETCD_PEER_AUTO_TLS
-              value: 'true'
           envFrom: null
           image: docker.io/bitnami/etcd:3.5.9-debian-11-r76
           imagePullPolicy: IfNotPresent
@@ -148,17 +137,10 @@ spec:
           volumeMounts:
             - mountPath: /bitnami/etcd
               name: data
-            - mountPath: /opt/bitnami/etcd/certs/token/
-              name: etcd-jwt-token
-              readOnly: true
       securityContext:
         fsGroup: 1001
       serviceAccountName: default
-      volumes:
-        - name: etcd-jwt-token
-          secret:
-            defaultMode: 256
-            secretName: etcd-token-private-key
+      volumes: null
   updateStrategy:
     type: RollingUpdate
   volumeClaimTemplates:

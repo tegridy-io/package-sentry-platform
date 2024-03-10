@@ -12,10 +12,11 @@ data:
     blocks_storage:
       backend: s3
       bucket_store:
-        max_chunk_pool_bytes: 12884901888
         sync_dir: /data/tsdb-sync
       tsdb:
         dir: /data/tsdb
+        head_compaction_interval: 15m
+        wal_replay_concurrency: 3
     common:
       storage:
         backend: s3
@@ -30,6 +31,7 @@ data:
       compaction_interval: 30m
       data_dir: /data
       deletion_delay: 2h
+      first_level_compaction_wait_period: 25m
       max_closing_blocks_concurrency: 2
       max_opening_blocks_concurrency: 4
       sharding_ring:
@@ -45,10 +47,7 @@ data:
             - https://etcd-0.etcd-headless.efk-observer-etcd.svc:2379
             - https://etcd-1.etcd-headless.efk-observer-etcd.svc:2379
             - https://etcd-2.etcd-headless.efk-observer-etcd.svc:2379
-            password: ?{vaultkv:t-silent-test-1234/c-green-test-1234/observer/etcd/rootPassword:7d5b2fe0}
-            tls_enabled: true
-            tls_insecure_skip_verify: true
-            username: root
+          prefix: observer-mimir-hatracker/
           store: etcd
     frontend:
       parallelize_shardable_queries: true
@@ -68,8 +67,8 @@ data:
         max_send_msg_size: 104857600
     limits:
       accept_ha_samples: true
-      ha_cluster_label: cluster_id
-      ha_replica_label: prometheus_replica
+      ha_cluster_label: cluster
+      ha_replica_label: __replica__
       max_cache_freshness: 10m
       max_query_parallelism: 240
       max_total_query_length: 12000h
@@ -77,13 +76,13 @@ data:
       abort_if_cluster_join_fails: false
       compression_enabled: false
       join_members:
-      - dns+mimir-gossip-ring.efk-observer-mimir.svc.cluster.local:7946
+      - dns+mimir-gossip-ring.efk-observer-mimir.svc.cluster.local.:7946
     querier:
       max_concurrent: 16
     query_scheduler:
       max_outstanding_requests_per_tenant: 800
     ruler:
-      alertmanager_url: dnssrvnoa+http://_http-metrics._tcp.mimir-alertmanager-headless.efk-observer-mimir.svc.cluster.local/alertmanager
+      alertmanager_url: dnssrvnoa+http://_http-metrics._tcp.mimir-alertmanager-headless.efk-observer-mimir.svc.cluster.local./alertmanager
       enable_api: true
       rule_path: /data
       tenant_federation:
@@ -91,13 +90,13 @@ data:
     runtime_config:
       file: /var/mimir/runtime.yaml
     server:
-      grpc_server_max_concurrent_streams: 1000
       grpc_server_max_connection_age: 2m
       grpc_server_max_connection_age_grace: 5m
       grpc_server_max_connection_idle: 1m
     store_gateway:
       sharding_ring:
         tokens_file_path: /data/tokens
+        unregister_on_shutdown: false
         wait_stability_min_duration: 1m
     tenant_federation:
       enabled: true
@@ -109,7 +108,7 @@ metadata:
     app.kubernetes.io/instance: mimir
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/name: mimir
-    app.kubernetes.io/version: 2.7.1
-    helm.sh/chart: mimir-distributed-4.3.0
+    app.kubernetes.io/version: 2.11.0
+    helm.sh/chart: mimir-distributed-5.2.2
   name: mimir-config
   namespace: efk-observer-mimir
