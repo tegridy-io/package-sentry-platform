@@ -1,7 +1,7 @@
 applications:
   - grafana-operator
-  - etcd as insight-etcd
-  - mimir as insight-mimir
+  - etcd as observer-etcd
+  - mimir as observer-mimir
 
 parameters:
   components:
@@ -27,15 +27,15 @@ parameters:
 
   # --- Etcd -------------------------------------------------------------------
 
-  insight_etcd:
-    namespace: efk-insight-etcd
+  observer_etcd:
+    namespace: efk-observer-etcd
     secrets:
       etcd-root-auth:
         stringData:
-          password: '?{vaultkv:${cluster:tenant}/${cluster:name}/insight/etcd/rootPassword}'
+          password: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/rootPassword}'
       etcd-token-private-key:
         stringData:
-          jwt-token.pem: '?{vaultkv:${cluster:tenant}/${cluster:name}/insight/etcd/tokenPrivkey}'
+          jwt-token.pem: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/tokenPrivkey}'
 
     helm_values:
       fullnameOverride: etcd
@@ -75,9 +75,9 @@ parameters:
 
   # --- Mimir ------------------------------------------------------------------
 
-  insight_mimir:
+  observer_mimir:
     namespace:
-      name: efk-insight-mimir
+      name: efk-observer-mimir
 
     global:
       storageClass: ceph-block
@@ -95,13 +95,13 @@ parameters:
       #   replica: prometheus_replica
       haStore:
         endpoints:
-          - https://etcd-0.etcd-headless.efk-insight-etcd.svc:2379
-          - https://etcd-1.etcd-headless.efk-insight-etcd.svc:2379
-          - https://etcd-2.etcd-headless.efk-insight-etcd.svc:2379
+          - https://etcd-0.etcd-headless.efk-observer-etcd.svc:2379
+          - https://etcd-1.etcd-headless.efk-observer-etcd.svc:2379
+          - https://etcd-2.etcd-headless.efk-observer-etcd.svc:2379
         tls_enabled: true
         tls_insecure_skip_verify: true
         username: root
-        password: '?{vaultkv:${cluster:tenant}/${cluster:name}/insight/etcd/rootPassword}'
+        password: '?{vaultkv:${cluster:tenant}/${cluster:name}/observer/etcd/rootPassword}'
 
     helmValues:
       fullnameOverride: mimir

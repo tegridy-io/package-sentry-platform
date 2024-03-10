@@ -1,9 +1,22 @@
-# Commodore Package: EFK Observer
+<div style='height: 48px; margin: 10px 0px;'>
+  <img src='docs/modules/ROOT/assets/images/eagle_red_128px.png' style='margin-right: 10px; float: left;'>
+  <h1>Eagle Fang Kubernetes - Observer Package</h1>
+</div>
 
-This is a [Commodore][commodore] config package for EFK Observer.
+Some words about Eagle Fang Kubernets and what the Observer Package is.
 
-This repository is part of Project Syn.
-For documentation on Project Syn and this component, see https://syn.tools.
+<div style='height: 48px; margin: 10px 0px;'>
+  <img src='docs/modules/ROOT/assets/images/syn_128px.png' style='margin-right: 10px; float: left;'>
+  <h1>Project Syn</h1>
+</div>
+
+Project Syn is a set of tools helping to securely manage a fleet of Kubernetes clusters.
+It brings a hierarchical configuration management based on GitOps principles, reusable components and an inventory of information about all Kubernetes clusters.
+
+* **Commodore**: Generate and deploy configurations 👉 https://syn.tools/commodore/
+* **Lieutenant Operator**: Manage inventories of `Clusters` and `Tenants` 👉 https://syn.tools/lieutenant-operator/
+* **Lieutenant API**: REST API for Lieutenant Operator 👉 https://syn.tools/lieutenant-api/
+* **Steward**: In-cluster agent for bootstrapping and reporting to Lieutenant 👉 https://syn.tools/steward/
 
 ## Documentation
 
