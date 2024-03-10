@@ -1,6 +1,6 @@
-# Commodore Package: EFK Sentry Platform
+# Commodore Package: EFK Observer
 
-This is a [Commodore][commodore] config package for EFK Sentry Platform.
+This is a [Commodore][commodore] config package for EFK Observer.
 
 This repository is part of Project Syn.
 For documentation on Project Syn and this component, see https://syn.tools.

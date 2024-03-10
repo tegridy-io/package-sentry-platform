@@ -5,7 +5,7 @@ on:
       - master
 
 env:
-  PACKAGE_NAME: sentry-platform
+  PACKAGE_NAME: efk-observer
 
 jobs:
   linting:

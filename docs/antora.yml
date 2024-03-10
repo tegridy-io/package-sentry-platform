@@ -1,5 +1,5 @@
-name: package-sentry-platform
-title: EFK Sentry Platform
+name: package-efk-observer
+title: EFK Observer
 version: master
 start_page: ROOT:index.adoc
 nav:

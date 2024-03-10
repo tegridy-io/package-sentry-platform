@@ -4,15 +4,15 @@
   "checkout": "main",
   "context": {
     "cookiecutter": {
-      "name": "EFK Sentry Platform",
-      "slug": "sentry-platform",
+      "name": "EFK Observer",
+      "slug": "efk-observer",
       "test_cases": "defaults",
       "add_golden": "y",
-      "copyright_holder": "VSHN AG <info@vshn.ch>",
+      "copyright_holder": "tegridy.io <info@tegridy.io>",
       "copyright_year": "2024",
       "github_owner": "tegridy-io",
-      "__github_name": "package-sentry-platform",
-      "__github_url": "https://github.com/tegridy-io/package-sentry-platform",
+      "__github_name": "package-efk-observer",
+      "__github_url": "https://github.com/tegridy-io/package-efk-observer",
       "_template": "https://github.com/projectsyn/commodore-config-package-template.git"
     }
   },
