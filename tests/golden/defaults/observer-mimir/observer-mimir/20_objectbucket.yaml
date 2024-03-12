@@ -1,0 +1,12 @@
+apiVersion: objectbucket.io/v1alpha1
+kind: ObjectBucketClaim
+metadata:
+  labels:
+    app.kubernetes.io/instance: mimir
+    app.kubernetes.io/managed-by: commodore
+    app.kubernetes.io/name: observer-mimir-metrics-store
+  name: observer-mimir-metrics-store
+  namespace: efk-observer-mimir
+spec:
+  bucketName: observer-mimir-metrics-store
+  storageClassName: ceph-bucket

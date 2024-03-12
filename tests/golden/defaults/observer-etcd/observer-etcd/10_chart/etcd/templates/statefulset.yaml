@@ -1,0 +1,155 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app.kubernetes.io/component: etcd
+    app.kubernetes.io/instance: observer-etcd
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: etcd
+    helm.sh/chart: etcd-9.1.0
+  name: etcd
+  namespace: efk-observer-etcd
+spec:
+  podManagementPolicy: Parallel
+  replicas: 3
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: etcd
+      app.kubernetes.io/instance: observer-etcd
+      app.kubernetes.io/name: etcd
+  serviceName: etcd-headless
+  template:
+    metadata:
+      annotations: null
+      labels:
+        app.kubernetes.io/component: etcd
+        app.kubernetes.io/instance: observer-etcd
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/name: etcd
+        helm.sh/chart: etcd-9.1.0
+    spec:
+      affinity:
+        nodeAffinity: null
+        podAffinity: null
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app.kubernetes.io/instance: observer-etcd
+                    app.kubernetes.io/name: etcd
+                topologyKey: kubernetes.io/hostname
+              weight: 1
+      containers:
+        - env:
+            - name: BITNAMI_DEBUG
+              value: 'false'
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: MY_STS_NAME
+              value: etcd
+            - name: ETCDCTL_API
+              value: '3'
+            - name: ETCD_ON_K8S
+              value: 'yes'
+            - name: ETCD_START_FROM_SNAPSHOT
+              value: 'no'
+            - name: ETCD_DISASTER_RECOVERY
+              value: 'no'
+            - name: ETCD_NAME
+              value: $(MY_POD_NAME)
+            - name: ETCD_DATA_DIR
+              value: /bitnami/etcd/data
+            - name: ETCD_LOG_LEVEL
+              value: info
+            - name: ALLOW_NONE_AUTHENTICATION
+              value: 'yes'
+            - name: ETCD_ADVERTISE_CLIENT_URLS
+              value: http://$(MY_POD_NAME).etcd-headless.efk-observer-etcd.svc.cluster.local:2379,http://etcd.efk-observer-etcd.svc.cluster.local:2379
+            - name: ETCD_LISTEN_CLIENT_URLS
+              value: http://0.0.0.0:2379
+            - name: ETCD_INITIAL_ADVERTISE_PEER_URLS
+              value: http://$(MY_POD_NAME).etcd-headless.efk-observer-etcd.svc.cluster.local:2380
+            - name: ETCD_LISTEN_PEER_URLS
+              value: http://0.0.0.0:2380
+            - name: ETCD_AUTO_COMPACTION_MODE
+              value: periodic
+            - name: ETCD_AUTO_COMPACTION_RETENTION
+              value: 12h
+            - name: ETCD_INITIAL_CLUSTER_TOKEN
+              value: etcd-cluster-k8s
+            - name: ETCD_INITIAL_CLUSTER_STATE
+              value: new
+            - name: ETCD_INITIAL_CLUSTER
+              value: etcd-0=http://etcd-0.etcd-headless.efk-observer-etcd.svc.cluster.local:2380,etcd-1=http://etcd-1.etcd-headless.efk-observer-etcd.svc.cluster.local:2380,etcd-2=http://etcd-2.etcd-headless.efk-observer-etcd.svc.cluster.local:2380
+            - name: ETCD_CLUSTER_DOMAIN
+              value: etcd-headless.efk-observer-etcd.svc.cluster.local
+          envFrom: null
+          image: docker.io/bitnami/etcd:3.5.9-debian-11-r76
+          imagePullPolicy: IfNotPresent
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - /opt/bitnami/scripts/etcd/prestop.sh
+          livenessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            failureThreshold: 5
+            initialDelaySeconds: 60
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 5
+          name: etcd
+          ports:
+            - containerPort: 2379
+              name: client
+              protocol: TCP
+            - containerPort: 2380
+              name: peer
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - /opt/bitnami/scripts/etcd/healthcheck.sh
+            failureThreshold: 5
+            initialDelaySeconds: 60
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 5
+          resources:
+            limits:
+              memory: 800Mi
+            requests:
+              cpu: 100m
+              memory: 400Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 1001
+          volumeMounts:
+            - mountPath: /bitnami/etcd
+              name: data
+      securityContext:
+        fsGroup: 1001
+      serviceAccountName: default
+      volumes: null
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi
+        storageClassName: ceph-block
